@@ -20,6 +20,9 @@ struct FGameDataBase
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "3", ClampMax = "300"))
     int32 RoundTime = 60;  // in seconds
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "1", ClampMax = "20"))
+    int32 RespawnTime = 5;  // in seconds
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     FLinearColor DefaultTeamColor = FLinearColor::Red;
 
@@ -40,6 +43,12 @@ public:
     virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 
     void Killed(AController* KillerController, AController* VictimController);
+
+    FGameDataBase GetGameData() const { return GameData; }
+    int32 GetCurrentRoundNum() const { return CurrentRound; }
+    int32 GetRoundSecondsRemaining() const { return RoundCountDown; }
+
+    void RespawnRequest(AController* Controller);
 
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Game")
@@ -65,6 +74,10 @@ private:
     void SetPlayerColor(AController* Controller);
 
     void LogPlayerInfo();
+
+    void StartRespawn(AController* Controller);
+
+    void GameOver();
 
     int32 CurrentRound = 1;
     int32 RoundCountDown = 0;
