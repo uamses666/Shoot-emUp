@@ -1,10 +1,6 @@
 // Shoot Them Up Game, All Rights Reserved
 
-
 #include "Player/STUBaseCharacter.h"
-#include "Camera/CameraComponent.h"
-#include "Components/InputComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Components/STUCharacterMovementComponent.h"
 #include "Components/STUHealthComponent.h"
 #include "Components/TextRenderComponent.h"
@@ -15,30 +11,17 @@
 ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
     : Super(ObjInit.SetDefaultSubobjectClass<USTUCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
-	PrimaryActorTick.bCanEverTick = true;
-
-    SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
-    SpringArmComponent->SetupAttachment(GetRootComponent());
-    SpringArmComponent->bUsePawnControlRotation = true;
-
-	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
-    CameraComponent->SetupAttachment(SpringArmComponent);
+    PrimaryActorTick.bCanEverTick = true;
 
     HealthComponent = CreateDefaultSubobject<USTUHealthComponent>("HealthComponent");
-
-    HealthTextComponent = CreateDefaultSubobject<UTextRenderComponent>("HealthTextComponent");
-    HealthTextComponent->SetupAttachment(GetRootComponent());
-    HealthTextComponent->SetOwnerNoSee(true);
-
     WeaponComponent = CreateDefaultSubobject<USTUWeaponComponent>("WeaponComponent");
 }
 
 void ASTUBaseCharacter::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
 
     check(HealthComponent);
-    check(HealthTextComponent);
     check(GetCharacterMovement());
     check(GetMesh());
 
@@ -51,33 +34,12 @@ void ASTUBaseCharacter::BeginPlay()
 
 void ASTUBaseCharacter::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-
-}
-
-void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-    check(PlayerInputComponent);
-    check(WeaponComponent);
-
-    PlayerInputComponent->BindAxis("MoveForward", this, &ASTUBaseCharacter::MoveForward);
-    PlayerInputComponent->BindAxis("MoveRight", this, &ASTUBaseCharacter::MoveRight);
-    PlayerInputComponent->BindAxis("LookUp", this, &ASTUBaseCharacter::AddControllerPitchInput);
-    PlayerInputComponent->BindAxis("TurnAround", this, &ASTUBaseCharacter::AddControllerYawInput);
-    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASTUBaseCharacter::Jump);
-    PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ASTUBaseCharacter::OnStartRunning);
-    PlayerInputComponent->BindAction("Run", IE_Released, this, &ASTUBaseCharacter::OnStopRunning);
-    PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &USTUWeaponComponent::StartFire);
-    PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &USTUWeaponComponent::StopFire);
-    PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &USTUWeaponComponent::NextWeapon);
-    PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &USTUWeaponComponent::Reload);
+    Super::Tick(DeltaTime);
 }
 
 bool ASTUBaseCharacter::IsRunning() const
 {
-    return WantsToRun && IsMovingForward && !GetVelocity().IsZero();
+    return false;
 }
 
 float ASTUBaseCharacter::GetMovementDirection() const
@@ -87,44 +49,17 @@ float ASTUBaseCharacter::GetMovementDirection() const
     const auto AngleBetween = FMath::Acos(FVector::DotProduct(GetActorForwardVector(), VelocityNormal));
     const auto CrossProduct = FVector::CrossProduct(GetActorForwardVector(), VelocityNormal);
     const auto Degrees = FMath::RadiansToDegrees(AngleBetween);
-    return CrossProduct.IsZero()? Degrees : Degrees * FMath::Sign(CrossProduct.Z);
-}
-
-void ASTUBaseCharacter::MoveForward(float Amount) 
-{
-    IsMovingForward = Amount > 0.0f;
-    if (Amount == 0) return;
-    AddMovementInput(GetActorForwardVector(), Amount);
-}
-
-void ASTUBaseCharacter::MoveRight(float Amount) 
-{
-    if (Amount == 0) return;
-    AddMovementInput(GetActorRightVector(), Amount);
-}
-
-void ASTUBaseCharacter::OnStartRunning() 
-{
-    WantsToRun = true;
-}
-
-void ASTUBaseCharacter::OnStopRunning() 
-{
-    WantsToRun = false;
+    return CrossProduct.IsZero() ? Degrees : Degrees * FMath::Sign(CrossProduct.Z);
 }
 
 void ASTUBaseCharacter::OnDeath()
 {
-    //PlayAnimMontage(DeathAnimMontage);
+    // PlayAnimMontage(DeathAnimMontage);
 
     GetCharacterMovement()->DisableMovement();
 
-    SetLifeSpan(5.0f);
+    SetLifeSpan(LifeSpanOnDeath);
 
-    if (Controller)
-    {
-        Controller->ChangeState(NAME_Spectating);
-    }
     GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
     WeaponComponent->StopFire();
 
@@ -132,12 +67,9 @@ void ASTUBaseCharacter::OnDeath()
     GetMesh()->SetSimulatePhysics(true);
 }
 
-void ASTUBaseCharacter::OnHealthChanged(float Health, float HealthDelta)
-{
-    HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
-}
+void ASTUBaseCharacter::OnHealthChanged(float Health, float HealthDelta) {}
 
-void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit) 
+void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit)
 {
     const auto FallVelocityZ = -GetVelocity().Z;
 
@@ -154,7 +86,3 @@ void ASTUBaseCharacter::SetPlayerColor(const FLinearColor& Color)
 
     MaterialInst->SetVectorParameterValue(MaterialColorName, Color);
 }
-
-
-
-

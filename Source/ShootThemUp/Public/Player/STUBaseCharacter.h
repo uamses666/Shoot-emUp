@@ -6,10 +6,7 @@
 #include "GameFramework/Character.h"
 #include "STUBaseCharacter.generated.h"
 
-class UCameraComponent;
-class USpringArmComponent;
 class USTUHealthComponent;
-class UTextRenderComponent;
 class ASTUBaseWeapon;
 class USTUWeaponComponent;
 
@@ -23,10 +20,8 @@ public:
 
     virtual void Tick(float DeltaTime) override;
 
-    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
     UFUNCTION(BlueprintCallable, Category = "Movement")
-    bool IsRunning() const;
+    virtual bool IsRunning() const;
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
     float GetMovementDirection() const;
@@ -39,22 +34,16 @@ protected:
     virtual void OnDeath();
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-    USpringArmComponent* SpringArmComponent;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-    UCameraComponent* CameraComponent;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     USTUHealthComponent* HealthComponent;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-    UTextRenderComponent* HealthTextComponent;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     USTUWeaponComponent* WeaponComponent;
 
     UPROPERTY(EditDefaultsOnly, Category = "Animations")
     UAnimMontage* DeathAnimMontage;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Damage")
+    float LifeSpanOnDeath = 5.0f;
 
     UPROPERTY(EditDefaultsOnly, Category = "Damage")
     FVector2D LandedDamageVelocity = FVector2D(900.0f, 1200.0f);
@@ -66,15 +55,6 @@ protected:
     FName MaterialColorName = "Paint Color";
 
 private:
-    bool WantsToRun = false;
-    bool IsMovingForward = false;
-
-    void MoveForward(float Amount);
-    void MoveRight(float Amount);
-
-    void OnStartRunning();
-    void OnStopRunning();
-
     void OnHealthChanged(float Health, float HealthDelta);
 
     UFUNCTION()
