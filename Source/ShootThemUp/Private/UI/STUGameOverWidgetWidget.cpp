@@ -25,7 +25,7 @@ void USTUGameOverWidgetWidget::NativeOnInitialized()
     }
 }
 
-void USTUGameOverWidgetWidget::OnMatchStateChanged(ESTUMatchState State) 
+void USTUGameOverWidgetWidget::OnMatchStateChanged(ESTUMatchState State)
 {
     if (State == ESTUMatchState::GameOver)
     {
@@ -55,12 +55,13 @@ void USTUGameOverWidgetWidget::UpdatePlayerStat()
         PlayerStatRowWidget->SetDeaths(STUUtils::TextFromInt(PlayerState->GetDeathNum()));
         PlayerStatRowWidget->SetTeam(STUUtils::TextFromInt(PlayerState->GetTeamID()));
         PlayerStatRowWidget->SetPlayerIndicatorVisibility(Controller->IsPlayerController());
+        PlayerStatRowWidget->SetTeamColor(PlayerState->GetTeamColor());
 
         PlayerStatBox->AddChild(PlayerStatRowWidget);
     }
 }
 
-void USTUGameOverWidgetWidget::OnResetLevel() 
+void USTUGameOverWidgetWidget::OnResetLevel()
 {
     const FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(this);
     UGameplayStatics::OpenLevel(this, FName(CurrentLevelName));

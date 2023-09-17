@@ -6,5 +6,6 @@ void ASTUMenuPlayerController::BeginPlay()
 
     SetInputMode(FInputModeUIOnly());
     bShowMouseCursor = true;
+
 }
 
