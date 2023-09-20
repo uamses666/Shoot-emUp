@@ -1,16 +1,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/STUBaseWidget.h"
 #include "STUGameInstance.h"
 #include "STUMenuWidget.generated.h"
 
 class UButton;
 class UHorizontalBox;
 class USTULevelItemWidget;
+class USoundCue;
 
 UCLASS()
-class SHOOTTHEMUP_API USTUMenuWidget : public UUserWidget
+class SHOOTTHEMUP_API USTUMenuWidget : public USTUBaseWidget
 {
     GENERATED_BODY()
 
@@ -27,11 +28,18 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     TSubclassOf<UUserWidget> LevelItemWidgetClass;
 
+    UPROPERTY(meta = (BindWidgetAnim), Transient)
+    UWidgetAnimation* HideAnimation;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+    USoundCue* StartGameSound;
+
     virtual void NativeOnInitialized() override;
+    virtual void OnAnimationFinished_Implementation(const UWidgetAnimation* Animation) override;
 
 private:
     UPROPERTY()
-    TArray<USTULevelItemWidget*> LevelItemWidgets; 
+    TArray<USTULevelItemWidget*> LevelItemWidgets;
 
     UFUNCTION()
     void OnStartGame();

@@ -28,10 +28,10 @@ protected:
     UProjectileMovementComponent* MovementComponent;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-    float DamageRadius = 200.0f;
+    float DamageRadius = 300.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-    float DamageAmount = 50.0f;
+    float DamageAmount = 75.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     bool DoFullDamage = false;
