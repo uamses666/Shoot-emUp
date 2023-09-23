@@ -4,6 +4,9 @@
 #include "Weapon/Components/STUWeaponFXComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 
 ASTURifleWeapon::ASTURifleWeapon()
 {
@@ -13,19 +16,22 @@ ASTURifleWeapon::ASTURifleWeapon()
 void ASTURifleWeapon::BeginPlay() 
 {
     Super::BeginPlay();
+
     check(WeaponFXComponent);
 }
 
 void ASTURifleWeapon::StartFire()
 {
-    InitMuzzleFX();
+    Super::StartFire();
+
+    InitFX();
     GetWorldTimerManager().SetTimer(ShotTimerHandle, this, &ASTURifleWeapon::MakeShot, TimeBetweenShots, true);
     MakeShot();
 }
 void ASTURifleWeapon::StopFire()
 {
     GetWorldTimerManager().ClearTimer(ShotTimerHandle);
-    SetMuzzleFXVisibility(false);
+    SetFXActive(false);
 }
 
 void ASTURifleWeapon::MakeShot()
@@ -35,6 +41,7 @@ void ASTURifleWeapon::MakeShot()
         StopFire();
         return;
     }
+
     FVector TraceStart, TraceEnd;
     if (!GetTraceData(TraceStart, TraceEnd))
     {
@@ -77,23 +84,33 @@ void ASTURifleWeapon::MakeDamage(const FHitResult& HitResult)
     DamageActor->TakeDamage(DamageAmount, FDamageEvent{}, GetController(), this);
 }
 
-void ASTURifleWeapon::InitMuzzleFX()
+void ASTURifleWeapon::InitFX()
 {
     if (!MuzzleFXComponent)
     {
         MuzzleFXComponent = SpawnMuzzleFX();
     }
-    SetMuzzleFXVisibility(true);
+
+    if (!FireAudioComponent)
+    {
+        FireAudioComponent = UGameplayStatics::SpawnSoundAttached(FireSound, WeaponMesh, MuzzleSocketName);
+    }
+    SetFXActive(true);
 }
 
 
-void ASTURifleWeapon::SetMuzzleFXVisibility(bool Visible)
+void ASTURifleWeapon::SetFXActive(bool IsActive)
 {
     if (MuzzleFXComponent)
     {
-        MuzzleFXComponent->SetPaused(!Visible);
-        MuzzleFXComponent->SetVisibility(Visible, true);
+        MuzzleFXComponent->SetPaused(!IsActive);
+        MuzzleFXComponent->SetVisibility(IsActive, true);
     }
+
+    if (FireAudioComponent)
+    {
+        FireAudioComponent->SetPaused(!IsActive);
+    } 
 }
 
 void ASTURifleWeapon::SpawnTraceFX(const FVector& TraceStart, const FVector& TraceEnd)

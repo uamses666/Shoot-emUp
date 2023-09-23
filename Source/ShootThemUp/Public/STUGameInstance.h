@@ -4,6 +4,8 @@
 #include "Engine/GameInstance.h"
 #include "STUGameInstance.generated.h"
 
+class USoundClass;
+
 USTRUCT(BlueprintType)
 struct FLevelData
 {
@@ -32,12 +34,17 @@ public:
 
     FName GetMenuLevelName() const { return MenuLevelName; }
 
+    void ToggleVolume();
+
 protected:
     UPROPERTY(EditDefaultsOnly, Category = "Game", meta = (ToolTip = "Level names must be unique"))
     TArray<FLevelData> LevelsData;
 
     UPROPERTY(EditDefaultsOnly, Category = "Game")
     FName MenuLevelName = NAME_None;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Sound")
+    USoundClass* MasterSoundClass;
 
 private:
     FLevelData StartupLevel;
