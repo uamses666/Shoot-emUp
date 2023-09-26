@@ -77,6 +77,7 @@ void USTUWeaponComponent::EquipWeapon(int32 WeaponIndex)
 
     if (CurrentWeapon)
     {
+        CurrentWeapon->Zoom(false);
         CurrentWeapon->StopFire();
         AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(), WeaponArmorySocketName);
     }
@@ -244,7 +245,6 @@ void USTUWeaponComponent::OnEmptyClip(ASTUBaseWeapon* AmmoEmptyWeapon)
             }
         }
     }
-    
 }
 
 void USTUWeaponComponent::ChangeClip()
@@ -255,4 +255,12 @@ void USTUWeaponComponent::ChangeClip()
     CurrentWeapon->ChangeClip();
     ReloadAnimInProgress = true;
     PlayAnimMontage(CurrentReloadAnimMontage);
+}
+
+void USTUWeaponComponent::Zoom(bool Enabled)
+{
+    if (CurrentWeapon)
+    {
+        CurrentWeapon->Zoom(Enabled);
+    }
 }

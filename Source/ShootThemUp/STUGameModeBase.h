@@ -96,6 +96,8 @@ private:
 
     void SetMatchState(ESTUMatchState State);
 
+    void StopAllFire();
+
     int32 CurrentRound = 1;
     int32 RoundCountDown = 0;
     FTimerHandle GameRoundTimerHandle;

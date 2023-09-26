@@ -64,6 +64,7 @@ void ASTUBaseCharacter::OnDeath()
 
     GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
     WeaponComponent->StopFire();
+    WeaponComponent->Zoom(false);
 
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     GetMesh()->SetSimulatePhysics(true);
@@ -89,4 +90,18 @@ void ASTUBaseCharacter::SetPlayerColor(const FLinearColor& Color)
     if (!MaterialInst) return;
 
     MaterialInst->SetVectorParameterValue(MaterialColorName, Color);
+}
+
+void ASTUBaseCharacter::TurnOff() 
+{
+    WeaponComponent->StopFire();
+    WeaponComponent->Zoom(false);
+    Super::TurnOff();
+}
+
+void ASTUBaseCharacter::Reset() 
+{
+    WeaponComponent->StopFire();
+    WeaponComponent->Zoom(false);
+    Super::Reset();
 }

@@ -17,12 +17,11 @@ public:
     ASTURifleWeapon();
     virtual void StartFire() override;
     virtual void StopFire() override;
+    virtual void Zoom(bool Enabled) override;
 
 protected:
     virtual void BeginPlay() override;
-
     virtual void MakeShot() override;
-
     virtual bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const override;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
@@ -43,6 +42,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     FString TraceTargetName = "TraceTarget";
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    float FOVZoomAngle = 50.0f;
+
 private:
     FTimerHandle ShotTimerHandle;
 
@@ -58,4 +60,6 @@ private:
     void SpawnTraceFX(const FVector& TraceStart, const FVector& TraceEnd);
 
     AController* GetController() const;
+
+    float DefaultCameraFOV = 90.0f;
 };
